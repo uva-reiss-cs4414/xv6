@@ -156,6 +156,9 @@ int             fetchint(uint, int*);
 int             fetchstr(uint, char**);
 void            syscall(void);
 
+// shutdown.c
+void            shutdown(void);
+
 // timer.c
 void            timerinit(void);
 

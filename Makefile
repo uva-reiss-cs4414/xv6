@@ -8,6 +8,7 @@ OBJS = \
 	ioapic.o\
 	kalloc.o\
 	kbd.o\
+        kshutdown.o\
 	lapic.o\
 	log.o\
 	main.o\
@@ -174,6 +175,8 @@ UPROGS=\
 	_usertests\
 	_wc\
 	_zombie\
+        _shutdown\
+
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -212,7 +215,7 @@ QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
 ifndef CPUS
 CPUS := 2
 endif
-QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
+QEMUOPTS = -device isa-debug-exit -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
 
 qemu: fs.img xv6.img
 	$(QEMU) -serial mon:stdio $(QEMUOPTS)
@@ -280,7 +283,7 @@ SUBMIT_FILENAME=xv6-submission-$(shell date +%Y%m%d%H%M%S).tar.gz
 
 submit:
 	@tar cf $(SUBMIT_FILENAME) Makefile *.c *.h $(wildcard *.txt) $(wildcard *.pdf) $(wildcard *.md)
-	@echo Created $(SUBMIT_FILENAME)
+	@echo Created $(SUBMIT_FILENAME); please upload and submit this file.
 
 
 .PHONY: dist-test dist
