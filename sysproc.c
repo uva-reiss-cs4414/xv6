@@ -96,3 +96,9 @@ sys_yield(void)
   yield();
   return 0;
 }
+
+int sys_shutdown(void)
+{
+  shutdown();
+  return 0;
+}
