@@ -244,6 +244,13 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 	@echo "*** Now run 'gdb'." 1>&2
 	$(QEMU) -nographic $(QEMUOPTS) -S $(QEMUGDB)
 
+SUBMIT_FILENAME=xv6-submission-$(shell date +%Y%m%d%H%M%S).tar.gz
+
+submit:
+	@tar cf $(SUBMIT_FILENAME) Makefile *.c *.h $(wildcard *.txt) $(wildcard *.pdf) $(wildcard *.md)
+	@echo Created $(SUBMIT_FILENAME); please upload and submit this file.
+
+
 # CUT HERE
 # prepare dist for students
 # after running make dist, probably want to
@@ -253,9 +260,10 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
-	printf.c umalloc.c\
+	printf.c umalloc.c \
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
+        kernel.ld
 
 dist:
 	rm -rf dist
@@ -276,7 +284,7 @@ dist-test:
 	cp dist/* dist-test
 	cd dist-test; $(MAKE) print
 	cd dist-test; $(MAKE) bochs || true
-	cd dist-test; $(MAKE) qemu
+	cd dist-test; $(MAKE) qemu-nox
 
 # update this rule (change rev#) when it is time to
 # make a new revision.
@@ -284,13 +292,7 @@ tar:
 	rm -rf /tmp/xv6
 	mkdir -p /tmp/xv6
 	cp dist/* dist/.gdbinit.tmpl /tmp/xv6
-	(cd /tmp; tar cf - xv6) | gzip >xv6-rev10.tar.gz  # the next one will be 10 (9/17)
-
-SUBMIT_FILENAME=xv6-submission-$(shell date +%Y%m%d%H%M%S).tar.gz
-
-submit:
-	@tar cf $(SUBMIT_FILENAME) Makefile *.c *.h $(wildcard *.txt) $(wildcard *.pdf) $(wildcard *.md)
-	@echo Created $(SUBMIT_FILENAME); please upload and submit this file.
+	(cd /tmp; tar cf - xv6) | gzip >xv6-rev10-uva1.tar.gz  
 
 
 .PHONY: dist-test dist

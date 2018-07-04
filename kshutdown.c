@@ -7,7 +7,8 @@ void
 shutdown(void)
 {
   /*
-     This only works in QEMU and assumes QEMU was run with -device isa-debug-exit
+     This only works in QEMU and assumes QEMU was run 
+     with -device isa-debug-exit
    */
   outb(0x501, 0x0);
 }
