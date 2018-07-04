@@ -58,12 +58,14 @@ string.c
 # low-level hardware
 mp.h
 mp.c
+date.h
 lapic.c
 ioapic.c
 kbd.h
 kbd.c
 console.c
 uart.c
+picirq.c
 
 # user-level
 initcode.S
@@ -75,3 +77,6 @@ sh.c
 bootasm.S
 bootmain.c
 
+# shutdown support
+kshutdown.c
+shutdown.c
