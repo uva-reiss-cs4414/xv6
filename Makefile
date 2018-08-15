@@ -292,7 +292,7 @@ SUBMIT_FILENAME=xv6-submission-$(shell date +%Y%m%d%H%M%S).tar.gz
 
 submit:
 	@tar zcf $(SUBMIT_FILENAME) Makefile *.c *.h $(wildcard *.txt) $(wildcard *.pdf) $(wildcard *.md)
-	@echo Created $(SUBMIT_FILENAME); please upload and submit this file.
+	@echo "Created $(SUBMIT_FILENAME); please upload and submit this file."
 
 
 .PHONY: dist-test dist
