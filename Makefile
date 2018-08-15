@@ -284,7 +284,7 @@ tar:
 SUBMIT_FILENAME=xv6-submission-$(shell date +%Y%m%d%H%M%S).tar.gz
 
 submit:
-	@tar zcf $(SUBMIT_FILENAME) Makefile *.c *.h $(wildcard *.txt) $(wildcard *.pdf) $(wildcard *.md)
+	@tar zcf $(SUBMIT_FILENAME) Makefile *.c *.h $(wildcard *.txt) $(wildcard *.pdf) $(wildcard *.md) *.S *.pl *.ld $(EXTRA)
 	@echo "Created $(SUBMIT_FILENAME); please upload and submit this file."
 
 
