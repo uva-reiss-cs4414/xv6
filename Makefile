@@ -238,13 +238,6 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 	@echo "*** Now run 'gdb'." 1>&2
 	$(QEMU) -nographic $(QEMUOPTS) -S $(QEMUGDB)
 
-SUBMIT_FILENAME=xv6-submission-$(shell date +%Y%m%d%H%M%S).tar.gz
-
-submit:
-	@tar cf $(SUBMIT_FILENAME) Makefile *.c *.h $(wildcard *.txt) $(wildcard *.pdf) $(wildcard *.md)
-	@echo Created $(SUBMIT_FILENAME); please upload and submit this file.
-
-
 # CUT HERE
 # prepare dist for students
 # after running make dist, probably want to
