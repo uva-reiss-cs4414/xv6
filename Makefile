@@ -77,13 +77,14 @@ AS = $(TOOLPREFIX)gas
 LD = $(TOOLPREFIX)ld
 OBJCOPY = $(TOOLPREFIX)objcopy
 OBJDUMP = $(TOOLPREFIX)objdump
-CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer -std=gnu99
+CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -O2 -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer
 #CFLAGS = -fno-pic -static -fno-builtin -fno-strict-aliasing -fvar-tracking -fvar-tracking-assignments -O0 -g -Wall -MD -gdwarf-2 -m32 -Werror -fno-omit-frame-pointer
 CFLAGS += $(shell $(CC) -fno-stack-protector -E -x c /dev/null >/dev/null 2>&1 && echo -fno-stack-protector)
 ASFLAGS = -m32 -gdwarf-2 -Wa,-divide
 # FreeBSD ld wants ``elf_i386_fbsd''
 LDFLAGS += -m $(shell $(LD) -V | grep elf_i386 2>/dev/null | head -n 1)
 LIBGCC_A = $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
+FS=fs.img
 
 xv6.img: bootblock kernel fs.img
 	dd if=/dev/zero of=xv6.img count=10000
@@ -182,6 +183,15 @@ UPROGS=\
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
 
+fs-%-as-init.img: _% mkfs README $(UPROGS)
+	mkdir -p temp-$<
+	for filename in README $(UPROGS) _$<; do \
+            ln -s ../$$filename ./temp-$<; \
+	done
+	rm ./temp-$</_init
+	ln -s ../$< ./temp-$</_init
+	cd temp-$< && ../mkfs ../$@ $(UPROGS)
+
 -include *.d
 
 clean: 
@@ -216,9 +226,9 @@ QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
 ifndef CPUS
 CPUS := 1
 endif
-QEMUOPTS = -device isa-debug-exit -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
+QEMUOPTS = -device isa-debug-exit -drive file=$(FS),index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
 
-qemu: fs.img xv6.img
+qemu: $(FS) xv6.img
 	$(QEMU) -serial mon:stdio $(QEMUOPTS)
 
 qemu-memfs: xv6memfs.img
