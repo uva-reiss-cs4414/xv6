@@ -85,6 +85,7 @@ ASFLAGS = -m32 -gdwarf-2 -Wa,-divide
 LDFLAGS += -m $(shell $(LD) -V | grep elf_i386 2>/dev/null | head -n 1)
 LIBGCC_A = $(shell $(CC) $(CFLAGS) -print-libgcc-file-name)
 FS=fs.img
+ASM_INCLUDES=asm.h memlayout.h mmu.h
 
 # Disable PIE when possible (for Ubuntu 16.10 toolchain)
 ifneq ($(shell $(CC) -dumpspecs 2>/dev/null | grep -e '[^f]no-pie'),)
@@ -104,7 +105,7 @@ xv6memfs.img: bootblock kernelmemfs
 	dd if=bootblock of=xv6memfs.img conv=notrunc
 	dd if=kernelmemfs of=xv6memfs.img seek=1 conv=notrunc
 
-bootblock: bootasm.S bootmain.c
+bootblock: bootasm.S bootmain.c $(ASM_INCLUDES)
 	$(CC) $(CFLAGS) -fno-pic -O -nostdinc -I. -c bootmain.c
 	$(CC) $(CFLAGS) -fno-pic -nostdinc -I. -c bootasm.S
 	$(LD) $(LDFLAGS) -N -e start -Ttext 0x7C00 -o bootblock.o bootasm.o bootmain.o
@@ -112,13 +113,13 @@ bootblock: bootasm.S bootmain.c
 	$(OBJCOPY) -S -O binary -j .text bootblock.o bootblock
 	./sign.pl bootblock
 
-entryother: entryother.S
+entryother: entryother.S $(ASM_INCLUDES)
 	$(CC) $(CFLAGS) -fno-pic -nostdinc -I. -c entryother.S
 	$(LD) $(LDFLAGS) -N -e start -Ttext 0x7000 -o bootblockother.o entryother.o
 	$(OBJCOPY) -S -O binary -j .text bootblockother.o entryother
 	$(OBJDUMP) -S bootblockother.o > entryother.asm
 
-initcode: initcode.S
+initcode: initcode.S $(ASM_INCLUDES)
 	$(CC) $(CFLAGS) -nostdinc -I. -c initcode.S
 	$(LD) $(LDFLAGS) -N -e start -Ttext 0 -o initcode.out initcode.o
 	$(OBJCOPY) -S -O binary initcode.out initcode
@@ -160,7 +161,7 @@ _forktest: forktest.o $(ULIB)
 	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o _forktest forktest.o ulib.o usys.o
 	$(OBJDUMP) -S _forktest > forktest.asm
 
-mkfs: mkfs.c fs.h
+mkfs: mkfs.c fs.h param.h
 	gcc -Werror -Wall -o mkfs mkfs.c
 
 # Prevent deletion of intermediate files, e.g. cat.o, after first build, so
@@ -199,7 +200,7 @@ fs-%-as-init.img: _% mkfs README $(UPROGS)
 	done
 	rm ./temp-$</_init
 	ln -s ../$< ./temp-$</_init
-	cd temp-$< && ../mkfs ../$@ $(UPROGS)
+	cd temp-$< && rm -f ../$@ && ../mkfs ../$@ $(UPROGS) || (rm -f fs.img; false)
 
 -include *.d
 
@@ -308,3 +309,5 @@ submit:
 
 
 .PHONY: dist-test dist
+
+.DELETE_ON_ERROR: 1
