@@ -8,8 +8,26 @@
 #define KERNBASE 0x80000000         // First kernel virtual address
 #define KERNLINK (KERNBASE+EXTMEM)  // Address where kernel is linked
 
-#define V2P(a) (((uint) (a)) - KERNBASE)
-#define P2V(a) ((void *)(((char *) (a)) + KERNBASE))
+#ifndef __ASSEMBLER__
+
+static inline uint V2P(void *a) {
+    extern void panic(char*) __attribute__((noreturn));
+    if (a < (void*) KERNBASE)
+        panic("V2P on address < KERNBASE (not a kernel virtual address)");
+    return (uint)a - KERNBASE;
+}
+
+static inline void *P2V(uint a) {
+    extern void panic(char*) __attribute__((noreturn));
+    if (a > KERNBASE)
+        panic("P2V on address > KERNBASE");
+    return (char*)a + KERNBASE;
+}
+
+#endif
+
+#define P2V_C(x) (((char*) x) + KERNBASE)    // same as P2V, but suitable for a compile-time constant
+#define V2P_C(x) (((uint) x) - KERNBASE)    // same as V2P, but suitable for a compile-time constant
 
 #define V2P_WO(x) ((x) - KERNBASE)    // same as V2P, but without casts
 #define P2V_WO(x) ((x) + KERNBASE)    // same as P2V, but without casts
