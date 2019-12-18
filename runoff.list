@@ -7,6 +7,7 @@ x86.h
 asm.h
 mmu.h
 elf.h
+date.h
 
 # entering xv6
 entry.S
@@ -76,6 +77,9 @@ sh.c
 # bootloader
 bootasm.S
 bootmain.c
+
+# link
+kernel.ld
 
 # shutdown support
 kshutdown.c
