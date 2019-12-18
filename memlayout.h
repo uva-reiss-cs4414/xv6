@@ -10,6 +10,7 @@
 
 #ifndef __ASSEMBLER__
 
+// Convert kernel virtual address to physical address
 static inline uint V2P(void *a) {
     extern void panic(char*) __attribute__((noreturn));
     if (a < (void*) KERNBASE)
@@ -17,6 +18,7 @@ static inline uint V2P(void *a) {
     return (uint)a - KERNBASE;
 }
 
+// Convert physical address to kernel virtual address
 static inline void *P2V(uint a) {
     extern void panic(char*) __attribute__((noreturn));
     if (a > KERNBASE)
@@ -26,8 +28,10 @@ static inline void *P2V(uint a) {
 
 #endif
 
-#define P2V_C(x) (((char*) x) + KERNBASE)    // same as P2V, but suitable for a compile-time constant
-#define V2P_C(x) (((uint) x) - KERNBASE)    // same as V2P, but suitable for a compile-time constant
+// same as P2V, but suitable for a compile-time constant
+#define P2V_C(x) (((char*) x) + KERNBASE)
+// same as V2P, but suitable for a compile-time constant
+#define V2P_C(x) (((uint) x) - KERNBASE)
 
 #define V2P_WO(x) ((x) - KERNBASE)    // same as V2P, but without casts
 #define P2V_WO(x) ((x) + KERNBASE)    // same as P2V, but without casts
