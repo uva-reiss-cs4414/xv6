@@ -192,6 +192,7 @@ fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
 
 fs-%-as-init.img: _% mkfs README $(UPROGS)
+	rm -rf temp-$<
 	mkdir -p temp-$<
 	for filename in README $(UPROGS) _$<; do \
             ln -s ../$$filename ./temp-$<; \
