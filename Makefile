@@ -239,21 +239,13 @@ endif
 QEMUOPTS = -device isa-debug-exit -drive file=$(FS),index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
 
 qemu: $(FS) xv6.img
-<<<<<<< HEAD
-	$(QEMU) -serial mon:stdio $(QEMUOPTS)
-=======
 	$(QEMU) -serial mon:stdio $(QEMUOPTS) || true
->>>>>>> master
 
 qemu-memfs: xv6memfs.img
 	$(QEMU) -drive file=xv6memfs.img,index=0,media=disk,format=raw -smp $(CPUS) -m 256 || true
 
 qemu-nox: $(FS) xv6.img
-<<<<<<< HEAD
-	$(QEMU) -nographic $(QEMUOPTS)
-=======
 	$(QEMU) -nographic $(QEMUOPTS) || true
->>>>>>> master
 
 .gdbinit: .gdbinit.tmpl
 	sed "s/localhost:1234/localhost:$(GDBPORT)/" < $^ > $@
