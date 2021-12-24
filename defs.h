@@ -1,3 +1,4 @@
+#include "param.h"
 struct buf;
 struct context;
 struct file;

@@ -1,3 +1,4 @@
+#include "param.h"
 struct stat;
 struct rtcdate;
 
