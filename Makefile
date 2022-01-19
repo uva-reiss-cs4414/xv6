@@ -151,6 +151,8 @@ vectors.S: vectors.pl
 
 ULIB = ulib.o usys.o printf.o umalloc.o
 
+usys.o: usys.S syscall.h traps.h
+
 _%: %.o $(ULIB)
 	$(LD) $(LDFLAGS) --gc-sections -N -e main -Ttext 0 -o $@ $^ $(LIBGCC_A)
 	$(OBJDUMP) -S $@ > $*.asm
