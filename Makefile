@@ -123,7 +123,7 @@ entryother: entryother.S $(ASM_INCLUDES)
 initcode: initcode.S $(ASM_INCLUDES)
 	$(CC) $(CFLAGS) -nostdinc -I. -c initcode.S
 	$(LD) $(LDFLAGS) -N -e start -Ttext 0 -o initcode.out initcode.o
-	$(OBJCOPY) -S -O binary initcode.out initcode
+	$(OBJCOPY) -S -j .text -O binary initcode.out initcode
 	$(OBJDUMP) -S initcode.o > initcode.asm
 
 kernel: $(OBJS) entry.o entryother initcode kernel.ld
@@ -154,14 +154,14 @@ ULIB = ulib.o usys.o printf.o umalloc.o
 usys.o: usys.S syscall.h traps.h
 
 _%: %.o $(ULIB)
-	$(LD) $(LDFLAGS) --gc-sections -N -e main -Ttext 0 -o $@ $^ $(LIBGCC_A)
+	$(LD) $(LDFLAGS) -T program.ld --gc-sections -o $@ $^ $(LIBGCC_A)
 	$(OBJDUMP) -S $@ > $*.asm
 	$(OBJDUMP) -t $@ | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $*.sym
 
 _forktest: forktest.o $(ULIB)
 	# forktest has less library code linked in - needs to be small
 	# in order to be able to max out the proc table.
-	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o _forktest forktest.o ulib.o usys.o
+	$(LD) $(LDFLAGS) -T program.ld -o _forktest forktest.o ulib.o usys.o
 	$(OBJDUMP) -S _forktest > forktest.asm
 
 mkfs: mkfs.c fs.h param.h
