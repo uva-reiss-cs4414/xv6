@@ -59,6 +59,6 @@ SECTIONS
 	PROVIDE(end = .);
 
 	/DISCARD/ : {
-		*(.eh_frame .note.GNU-stack)
+		*(.eh_frame .note.GNU-stack .note.gnu.property)
 	}
 }
