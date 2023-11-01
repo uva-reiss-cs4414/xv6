@@ -24,7 +24,7 @@ sys_getpagetableentry(void)
   if (argint(0, &pid) < 0) {
     return -1;
   }
-  else if (argin(1, &address) < 0) {
+  else if (argint(1, &address) < 0) {
     return -1;
   }
   else {
