@@ -34,6 +34,21 @@ sys_getpagetableentry(void)
   }
 }
 
+int
+sys_isphysicalpagefree(void)
+{
+  // returns a true value if physical page number ppn is on the free list managed by kalloc.c
+  // and a false value (0) otherwise.
+  return 0;
+}
+
+int
+sys_dumppagetable(void)
+{
+  // outputs the page table of the process with pid pid to the console (like with `cprintf()`)
+  return 0;
+}
+
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
 static int

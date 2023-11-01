@@ -23,3 +23,5 @@
 #define SYS_yield     22
 #define SYS_shutdown  23
 #define SYS_getpagetableentry 24
+#define SYS_isphysicalpagefree 25
+#define SYS_dumppagetable 26

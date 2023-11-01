@@ -191,6 +191,8 @@ UPROGS=\
 	_zombie\
     _shutdown\
 	_getpagetableentry\
+	_isphysicalpagefree\
+	_dumppagetable\
 
 
 fs.img: mkfs README $(UPROGS)
