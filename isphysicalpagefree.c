@@ -5,6 +5,6 @@
 int
 main(int argc, char *argv[])
 {
-  printf(1, "%d \n", isphysicalpagefree());
+  printf(1, "%d \n", isphysicalpagefree(1));
   exit();
 }

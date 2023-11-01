@@ -15,23 +15,38 @@
 #include "sleeplock.h"
 #include "file.h"
 #include "fcntl.h"
+#include "vm.h"
+
+extern struct {
+    struct spinlock lock;
+    struct proc proc[NPROC];
+} ptable;
 
 int
-sys_getpagetableentry(void)
+sys_getpagetableentry(int pid, int address)
 {
-  int pid;
-  int address;
-  if (argint(0, &pid) < 0) {
-    return -1;
+  // return last-level page table entry for pid at virtual address
+  // or 0 if there is no such page table entry
+
+  struct proc* p = 0;
+  // loop through the processes
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->pid == pid) { // find process with correct pid
+        // retrieve page table entry for given address
+        pde_t* pgdir = p->pgdir;
+        pte_t* pgtab = walkpgdir(pgdir, (void*)address, 0);
+
+        // check if page table entry exists
+        if (pgtab == 0 || !(*pgtab & PTE_P)) {
+            return 0;
+        }
+
+        int entry = *pgtab;
+        return entry;
+    }
   }
-  else if (argint(1, &address) < 0) {
-    return -1;
-  }
-  else {
-    // return last-level page table entry for pid at virtual address
-    // or 0 if there is no such page table entry
-    return 0;
-  }
+
+  return -1;
 }
 
 int

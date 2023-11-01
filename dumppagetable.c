@@ -5,6 +5,6 @@
 int
 main(int argc, char *argv[])
 {
-  printf(1, "%d \n", dumppagetable());
+  printf(1, "%d \n", dumppagetable(1));
   exit();
 }
