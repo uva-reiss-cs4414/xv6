@@ -6,6 +6,51 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#include "vm.h"
+
+int
+sys_getpagetableentry(int pid, int address)
+{
+  // return last-level page table entry for pid at virtual address
+  // or 0 if there is no such page table entry
+  struct process_info info[NPROC];
+  getprocessesinfohelper(info, NPROC);
+
+  struct proc* p = 0;
+  for (int i = 0; i < NPROC; i++) {
+    if (info[i].pid == pid) { // find process with correct pid
+        if (info[i].state == UNUSED) return -1;
+        // retrieve page table entry for given address
+        pde_t* pgdir = p->pgdir;
+        pte_t* pgtab = walkpgdir(pgdir, (void*)address, 0);
+
+        // check if page table entry exists
+        if (pgtab == 0 || !(*pgtab & PTE_P)) {
+            return 0;
+        }
+
+        int entry = *pgtab;
+        return entry;
+    }
+  }
+
+  return -1;
+}
+
+int
+sys_isphysicalpagefree(void)
+{
+  // returns a true value if physical page number ppn is on the free list managed by kalloc.c
+  // and a false value (0) otherwise.
+  return 0;
+}
+
+int
+sys_dumppagetable(void)
+{
+  // outputs the page table of the process with pid pid to the console (like with `cprintf()`)
+  return 0;
+}
 
 int
 sys_fork(void)

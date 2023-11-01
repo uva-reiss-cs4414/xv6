@@ -15,54 +15,6 @@
 #include "sleeplock.h"
 #include "file.h"
 #include "fcntl.h"
-#include "vm.h"
-
-extern struct {
-    struct spinlock lock;
-    struct proc proc[NPROC];
-} ptable;
-
-int
-sys_getpagetableentry(int pid, int address)
-{
-  // return last-level page table entry for pid at virtual address
-  // or 0 if there is no such page table entry
-
-  struct proc* p = 0;
-  // loop through the processes
-  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-    if (p->pid == pid) { // find process with correct pid
-        // retrieve page table entry for given address
-        pde_t* pgdir = p->pgdir;
-        pte_t* pgtab = walkpgdir(pgdir, (void*)address, 0);
-
-        // check if page table entry exists
-        if (pgtab == 0 || !(*pgtab & PTE_P)) {
-            return 0;
-        }
-
-        int entry = *pgtab;
-        return entry;
-    }
-  }
-
-  return -1;
-}
-
-int
-sys_isphysicalpagefree(void)
-{
-  // returns a true value if physical page number ppn is on the free list managed by kalloc.c
-  // and a false value (0) otherwise.
-  return 0;
-}
-
-int
-sys_dumppagetable(void)
-{
-  // outputs the page table of the process with pid pid to the console (like with `cprintf()`)
-  return 0;
-}
 
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
