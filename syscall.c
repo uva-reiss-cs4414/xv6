@@ -105,6 +105,7 @@ extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_yield(void);
 extern int sys_shutdown(void);
+extern int sys_getpagetableentry(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,

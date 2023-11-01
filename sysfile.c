@@ -16,6 +16,13 @@
 #include "file.h"
 #include "fcntl.h"
 
+// temporary to test
+int
+sys_getpagetableentry(int pid, int address)
+{
+  return 2;
+}
+
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
 static int
