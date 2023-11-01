@@ -16,11 +16,22 @@
 #include "file.h"
 #include "fcntl.h"
 
-// temporary to test
 int
-sys_getpagetableentry(int pid, int address)
+sys_getpagetableentry(void)
 {
-  return 2;
+  int pid;
+  int address;
+  if (argint(0, &pid) < 0) {
+    return -1;
+  }
+  else if (argin(1, &address) < 0) {
+    return -1;
+  }
+  else {
+    // return last-level page table entry for pid at virtual address
+    // or 0 if there is no such page table entry
+    return 0;
+  }
 }
 
 // Fetch the nth word-sized system call argument as a file descriptor
