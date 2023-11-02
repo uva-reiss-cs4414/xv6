@@ -38,10 +38,12 @@ sys_getpagetableentry(int pid, int address)
 }
 
 int
-sys_isphysicalpagefree(int ppn)
+sys_isphysicalpagefree(void)
 {
   // returns a true value if physical page number ppn is on the free list managed by kalloc.c
   // and a false value (0) otherwise.
+  int ppn;
+  if (argint(0, &ppn) < 0) return -1;
   return isfree_helper(ppn);
 }
 
