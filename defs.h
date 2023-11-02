@@ -69,6 +69,7 @@ char*           kalloc(void);
 void            kfree(char*);
 void            kinit1(void*, void*);
 void            kinit2(void*, void*);
+int             isfree_helper(int ppn);
 
 //int             physpagefreehelper(int);
 

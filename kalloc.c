@@ -76,21 +76,24 @@ kfree(char *v)
   if(kmem.use_lock)
     release(&kmem.lock);
 }
-/*
-int physpagefreehelper(int ppn){
+
+int isfree_helper(int ppn) {
   struct run *r;
   // get first entry from freelist
   r = kmem.freelist;
+
   int each_ppn;
   while (r->next) {
-    // get address of PTE from walkpgdir?
-    each_ppn = getphysicaladdress(r);
+    each_ppn = V2P(r); // subtract KERNBASE
+    each_ppn = each_ppn >> 12; // shift right 12 bits for ppn
+
     if (each_ppn == ppn) {
       return 1;
     }
+    r = r->next;
   }
   return 0;
-}*/
+}
 
 // Allocate one 4096-byte page of physical memory.
 // Returns a pointer that the kernel can use.
