@@ -38,12 +38,26 @@ sys_getpagetableentry(int pid, int address)
 }
 
 int
-sys_isphysicalpagefree(void)
+sys_isphysicalpagefree(int ppn)
 {
   // returns a true value if physical page number ppn is on the free list managed by kalloc.c
   // and a false value (0) otherwise.
+  // just calls the helper function in kalloc.c which does all of the work?
+  
+  //return physpagefreehelper(ppn);
   return 0;
 }
+/*
+int getphysicaladdress(void *va) {
+  pte_t *pte;
+  pte = walkpgdir(myproc()->pgdir, va, 0); // pte is now address of page table entry
+  // page table entry itself is *pte??
+  *pte = PTE_ADDR(*pte);   // mask lower order 12 bits of PTE to get physical frame?
+  // need to get lower 12 bits from VA as offset?
+  *pte = (uint)(*pte) | ((uint)(va) & 0xFFF); // concatenate with virtual page number from kmem?
+  
+  return *pte;
+}*/
 
 int
 sys_dumppagetable(void)
