@@ -63,6 +63,7 @@ struct process_info {
     char name[16];
     int state;
     pde_t* pgdir;
+    uint sz;
 };
 
 void getprocessesinfohelper(struct process_info *info, int max);

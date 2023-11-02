@@ -1,24 +1,23 @@
-[ in progress ] Add a new xv6 system call `int getpagetableentry(int pid, int
+[ X ] Add a new xv6 system call `int getpagetableentry(int pid, int
     address)` that returns the last-level page table entry for pid at virtual address `address`,
     or 0 if there is no such page table entry.
-[ ] Add a new system call `int isphysicalpagefree(int ppn)` that returns a
+[   ] Add a new system call `int isphysicalpagefree(int ppn)` that returns a
     true value if physical page number ppn is on the free list managed by kalloc.c and a
     false value (0) otherwise.
-[ ] Add a new system call `int dumppagetable(int pid)` that outputs the page
+[ X ] Add a new system call `int dumppagetable(int pid)` that outputs the page
     table of the process with pid pid to the console (like with `cprintf()`) as follows:
-    - Only last-level page table entries should be shown;
-    - Only page table entries for the user part of memory (bytes 0 through p->sz where
-    p is the corresponding struct proc*) should be output;
-    - Output a line starting with START PAGE TABLE before the page table entry
-    information, and one starting with END PAGE TABLE immediately after. You may,
-    if you choose, put additional text afterwards on these lines;
-    - Output a line for each page table entry, with fields separated by whitespace, in
-    order from lowest virtual address to highest (you may use any kind of ASCII
-    whitespace, even if it (like tabs) doesn’t display correctly in qemu’s graphical
-    console);
-    - Optionally, output a header line describing the fields.
-    - For each present page table entry, output a series of space-separated fields in this
-    order:
+    [ X ] Only last-level page table entries should be shown;
+    [ X ] Only page table entries for the user part of memory (bytes 0 through p->sz where
+        p is the corresponding struct proc*) should be output;
+    [ X ] Output a line starting with START PAGE TABLE before the page table entry
+        information, and one starting with END PAGE TABLE immediately after. You may,
+        if you choose, put additional text afterwards on these lines;
+    [ X ] Output a line for each page table entry, with fields separated by whitespace, in
+        order from lowest virtual address to highest (you may use any kind of ASCII
+        whitespace, even if it (like tabs) doesn’t display correctly in qemu’s graphical
+        console);
+    [   ] Optionally, output a header line describing the fields.
+    [ X ] For each present page table entry, output a series of space-separated fields in this order:
         ▪ the virtual page number used to lookup the page table entry in
         hexadecimal or the virtual address corresponding to the first byte of that
         virtual page number in hexadecimal (your choice which)
@@ -32,7 +31,7 @@
             hexadecimal or the physical address of the first byte of that
             physical page in hexadecimal (your choice which)
         ▪ any number of fields of your choosing
-    - For non-present pages, you may either omit them entirely from the output or
+    [ X ] For non-present pages, you may either omit them entirely from the output or
     output the following fields in this order:
         ▪ the virtual page number in hexadecimal or address in hexadecimal (your
         choice which)

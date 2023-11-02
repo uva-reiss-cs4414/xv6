@@ -29,6 +29,7 @@ void getprocessesinfohelper(struct process_info *info, int max) {
         safestrcpy(info[i].name, p->name, sizeof(info[i].name));
         info[i].state = p->state;
         info[i].pgdir = p->pgdir;
+        info[i].sz = p->sz;
         i++;
     }
 }

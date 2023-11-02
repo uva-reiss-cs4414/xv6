@@ -47,6 +47,19 @@ sys_isphysicalpagefree(void)
   return 0;
 }
 
+/* print out the contents of a page table entry (given as an integer) to stdout */
+void dump_pte(pte_t pte) {
+    if (pte & PTE_P) {
+        cprintf("P %s %s %x\n",
+            pte & PTE_U ? "U" : "-",
+            pte & PTE_W ? "W" : "-",
+            PTE_ADDR(pte) >> PTXSHIFT
+        );
+    } else {
+        cprintf("- <not present>\n");
+    }
+}
+
 int
 sys_dumppagetable(void)
 {
@@ -60,29 +73,18 @@ sys_dumppagetable(void)
   for (int i = 0; i < NPROC; i++) {
     if (info[i].pid == pid) { // find process with correct pid
       pde_t* pgdir = info[i].pgdir; 
-      for (int pdx = 0; pdx < NPDENTRIES; pdx++) {
-        // skip non-present page directory entries
-        if (!(pgdir[pdx] & PTE_P)) continue;
-        
-        pde_t* pgtab = (pde_t*)P2V(PTE_ADDR(pgdir[pdx]));  // second-level page table
 
-        // iterate through the second-level page table entries
-        for (int ptx = 0; ptx < NPTENTRIES; ptx++) {
-          pte_t pte = pgtab[ptx];
-
-          // check if page is present
-          if (pte & PTE_P) {
-              cprintf("Virtual Page: %x, P: %d, U: %d, W: %d, Physical Page: %x\n",
-                (pdx << PTXSHIFT) | ptx,  // calculate the virtual page number
-                (pte & PTE_P) ? 1 : 0,    // check if the page is present
-                (pte & PTE_U) ? 1 : 0,    // check user-mode accessibility
-                (pte & PTE_W) ? 1 : 0,    // check writability
-                PTE_ADDR(pte));           // extract physical page number
-          } else {
-              // non-present page
-          }
-        }
-      } 
+      uint va;
+      cprintf("START PAGE TABLE (pid %d)\n", pid);
+      // iterate over virtual addresses
+      for (va = 0; va < info[i].sz; va += PGSIZE) {
+          // retrieve page table entry for each address
+          pte_t* pte = walkpgdir(pgdir, (void*)va, 0);
+          // check if page table is present
+          if (pte != 0 && (*pte & PTE_P)) dump_pte(*pte);
+          else cprintf("%x - - - -\n", va);
+      }
+      cprintf("END PAGE TABLE\n");
       break;
     }
   }
