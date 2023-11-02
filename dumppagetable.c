@@ -5,6 +5,7 @@
 int
 main(int argc, char *argv[])
 {
-  printf(1, "%d \n", dumppagetable(1));
+  if (argc != 2) printf(1, "%s \n", "invalid command: provide a pid");
+  else dumppagetable(atoi(argv[1]));
   exit();
 }

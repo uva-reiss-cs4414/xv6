@@ -24,13 +24,11 @@ void getprocessesinfohelper(struct process_info *info, int max) {
     int i;
     struct proc *p;
     for (i = 0, p = ptable.proc; i < NPROC && p < ptable.proc + NPROC; i++, p++) {
-        if (p->state == UNUSED)
-            continue;
-        
+        if (p->state == UNUSED) continue;
         info[i].pid = p->pid;
         safestrcpy(info[i].name, p->name, sizeof(info[i].name));
         info[i].state = p->state;
-
+        info[i].pgdir = p->pgdir;
         i++;
     }
 }

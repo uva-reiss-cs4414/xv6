@@ -62,7 +62,7 @@ struct process_info {
     int pid;
     char name[16];
     int state;
-    // Add more fields as needed
+    pde_t* pgdir;
 };
 
 void getprocessesinfohelper(struct process_info *info, int max);
