@@ -83,7 +83,7 @@ int isfree_helper(int ppn) {
   r = kmem.freelist;
 
   int each_ppn;
-  while (r->next) {
+  while (r) {
     each_ppn = V2P(r); // subtract KERNBASE
     each_ppn = each_ppn >> 12; // shift right 12 bits for ppn
 

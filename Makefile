@@ -195,6 +195,8 @@ UPROGS=\
 	_isphysicalpagefree\
 	_dumppagetable\
 	_ptetool\
+	_pp_test\
+	_pp_suite\
 
 
 fs.img: mkfs README $(UPROGS)
