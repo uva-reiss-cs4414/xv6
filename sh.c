@@ -141,8 +141,6 @@ getcmd(char *buf, int nbuf)
   return 0;
 }
 
-char my_test_str[] = "string whee";
-
 int
 main(void)
 {

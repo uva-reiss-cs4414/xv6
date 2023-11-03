@@ -71,8 +71,6 @@ void            kinit1(void*, void*);
 void            kinit2(void*, void*);
 int             isfree_helper(int ppn);
 
-//int             physpagefreehelper(int);
-
 // kbd.c
 void            kbdintr(void);
 
@@ -159,9 +157,6 @@ int             argstr(int, char**);
 int             fetchint(uint, int*);
 int             fetchstr(uint, char**);
 void            syscall(void);
-
-// sysproc.c
-//int            getphysicaladdress(void *va);
 
 // shutdown.c
 void            shutdown(void);
