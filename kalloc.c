@@ -77,6 +77,24 @@ kfree(char *v)
     release(&kmem.lock);
 }
 
+int isfree_helper(int ppn) {
+  struct run *r;
+  // get first entry from freelist
+  r = kmem.freelist;
+
+  int each_ppn;
+  while (r) {
+    each_ppn = V2P(r); // subtract KERNBASE
+    each_ppn = each_ppn >> 12; // shift right 12 bits for ppn
+
+    if (each_ppn == ppn) {
+      return 1;
+    }
+    r = r->next;
+  }
+  return 0;
+}
+
 // Allocate one 4096-byte page of physical memory.
 // Returns a pointer that the kernel can use.
 // Returns 0 if the memory cannot be allocated.

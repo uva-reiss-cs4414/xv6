@@ -44,7 +44,9 @@ sys_isphysicalpagefree(void)
 {
   // returns a true value if physical page number ppn is on the free list managed by kalloc.c
   // and a false value (0) otherwise.
-  return 0;
+  int ppn;
+  if (argint(0, &ppn) < 0) return -1;
+  return isfree_helper(ppn);
 }
 
 /* print out the contents of a page table entry (given as an integer) to stdout */
