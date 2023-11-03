@@ -56,3 +56,14 @@ struct proc {
 //   original data and bss
 //   fixed-size stack
 //   expandable heap
+
+
+struct process_info {
+    int pid;
+    char name[16];
+    int state;
+    pde_t* pgdir;
+    uint sz;
+};
+
+void getprocessesinfohelper(struct process_info *info, int max);
