@@ -8,6 +8,40 @@
 #include "traps.h"
 #include "spinlock.h"
 
+void page_fault_handler(struct trapframe *tf) {
+  // get the address using rcr2()
+  uint fault_va = rcr2(); // faulting address
+
+  struct proc *curproc = myproc(); // current process
+
+  if (fault_va >= curproc->sz) {
+    // memory outside allocation, kill process
+    cprintf("invalid address: 0x%x\n", fault_va);
+    curproc->killed = 1;
+    return;
+  }
+
+  // obtain a free page
+  char *mem = kalloc();
+  if (mem == 0) {
+    // no more memory, kill process
+    cprintf("out of memory\n");
+    curproc->killed = 1;
+    return;
+  }
+
+  // zero out the page
+  memset(mem, 0, PGSIZE);
+
+  // update the process's page table
+  /* 
+    use either walkpgdir() or mappages()
+    update the PTE yourself or have a function do it for you
+    remember physical vs virtual addresses
+    don't forget to flush the tlb
+  */
+}
+
 // Interrupt descriptor table (shared by all CPUs).
 struct gatedesc idt[256];
 extern uint vectors[];  // in vectors.S: array of 256 entry pointers
@@ -47,6 +81,9 @@ trap(struct trapframe *tf)
   }
 
   switch(tf->trapno){
+  case T_PGFLT:
+    page_fault_handler(tf);
+    break;
   case T_IRQ0 + IRQ_TIMER:
     if(cpuid() == 0){
       acquire(&tickslock);
