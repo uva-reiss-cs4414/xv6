@@ -11,7 +11,7 @@
 
 void page_fault_handler(struct trapframe *tf) {
   // get the address using rcr2()
-  uint fault_va = rcr2(); // faulting address
+  uint fault_va = rcr2(); // faulting virtual address
 
   struct proc *curproc = myproc(); // current process
 
@@ -33,25 +33,30 @@ void page_fault_handler(struct trapframe *tf) {
 
   // zero out the page
   memset(mem, 0, PGSIZE);
-
-  // update the process's page table
-  /* 
-    use either walkpgdir() or mappages()
-    update the PTE yourself or have a function do it for you
-    remember physical vs virtual addresses
-    don't forget to flush the tlb
-  */
   
-  // get physical address ptr from walkpgdir
-  pte_t* pte = walkpgdir(myproc()->pgdir, mem, 1);
+  // get physical address ptr from walkpgdir based on faulting virtual address
+  pte_t *pte;
+  pde_t *pde = walkpgdir(curproc->pgdir, (void *)fault_va, 1);
 
-  if (pte != (pte_t *)0x0) { // if not null
-    *pte = V2P(mem) | PTE_P | PTE_W | PTE_U;
+  if (pde == 0 || *pde == 0) {
+    // failled to get/allocate page directory entry
+    cprintf("walkpgdir failed\n");
+    kfree(mem); // free the page created
+    curproc->killed = 1; // kill the process
+    return;
   }
-  // not sure what to do if null
 
-  // flush tlb
-  switchuvm(myproc());
+  // pte points to beginning of page table for faulting virtual address
+  pte = (pte_t *)P2V(PTE_ADDR(*pde));
+  
+
+  // update the page table entry
+  pte += PTE_INDEX(fault_va); // points pte to the faulting virtual address
+  *pte = V2P(mem) | PTE_P | PTE_W | PTE_U; // value of pte is new page
+
+
+  // flush tlb, not sure if we're supposed to use this or just lcr3
+  switchuvm(curproc);
 }
 
 // Interrupt descriptor table (shared by all CPUs).
