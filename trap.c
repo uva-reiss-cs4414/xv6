@@ -7,6 +7,7 @@
 #include "x86.h"
 #include "traps.h"
 #include "spinlock.h"
+#include "vm.h"
 
 void page_fault_handler(struct trapframe *tf) {
   // get the address using rcr2()
@@ -22,7 +23,7 @@ void page_fault_handler(struct trapframe *tf) {
   }
 
   // obtain a free page
-  char *mem = kalloc();
+  char *mem = kalloc(); // pointer to virtual address
   if (mem == 0) {
     // no more memory, kill process
     cprintf("out of memory\n");
@@ -40,6 +41,17 @@ void page_fault_handler(struct trapframe *tf) {
     remember physical vs virtual addresses
     don't forget to flush the tlb
   */
+  
+  // get physical address ptr from walkpgdir
+  pte_t* pte = walkpgdir(myproc()->pgdir, mem, 1);
+
+  if (pte != (pte_t *)0x0) { // if not null
+    *pte = V2P(mem) | PTE_P | PTE_W | PTE_U;
+  }
+  // not sure what to do if null
+
+  // flush tlb
+  switchuvm(myproc());
 }
 
 // Interrupt descriptor table (shared by all CPUs).
