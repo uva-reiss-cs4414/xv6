@@ -179,8 +179,7 @@ growproc(int n)
   if(n > 0){
     // update bookkeeping info w/out allocating memory immediately
     sz += n;
-    // if((sz = allocuvm(curproc->pgdir, sz, sz + n)) == 0)
-    //   return -1;
+    
   } else if(n < 0){
     if((sz = deallocuvm(curproc->pgdir, sz, sz + n)) == 0)
       return -1;

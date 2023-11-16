@@ -15,7 +15,7 @@ void page_fault_handler(struct trapframe *tf) {
 
   struct proc *curproc = myproc(); // current process
 
-  if (fault_va >= curproc->sz) {
+  if (fault_va >= PGROUNDDOWN(curproc->sz)) {
     // memory outside allocation, kill process
     cprintf("invalid address: 0x%x\n", fault_va);
     curproc->killed = 1;
@@ -35,28 +35,21 @@ void page_fault_handler(struct trapframe *tf) {
   memset(mem, 0, PGSIZE);
   
   // get physical address ptr from walkpgdir based on faulting virtual address
-  pte_t *pte;
-  pde_t *pde = walkpgdir(curproc->pgdir, (void *)fault_va, 1);
+  pte_t *pte = walkpgdir(curproc->pgdir, (void*) fault_va, 1);
 
-  if (pde == 0 || *pde == 0) {
-    // failled to get/allocate page directory entry
+  if (pte == 0) {
+    // failed to get/allocate page directory entry
     cprintf("walkpgdir failed\n");
     kfree(mem); // free the page created
     curproc->killed = 1; // kill the process
     return;
   }
-
-  // pte points to beginning of page table for faulting virtual address
-  pte = (pte_t *)P2V(PTE_ADDR(*pde));
   
-
   // update the page table entry
-  pte += PTE_INDEX(fault_va); // points pte to the faulting virtual address
-  *pte = V2P(mem) | PTE_P | PTE_W | PTE_U; // value of pte is new page
+  *pte = V2P(mem) | PTE_P | PTE_W | PTE_U;
 
-
-  // flush tlb, not sure if we're supposed to use this or just lcr3
-  switchuvm(curproc);
+  // flush tlb
+  lcr3(V2P(curproc->pgdir));
 }
 
 // Interrupt descriptor table (shared by all CPUs).
