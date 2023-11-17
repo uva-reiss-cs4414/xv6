@@ -7,6 +7,50 @@
 #include "x86.h"
 #include "traps.h"
 #include "spinlock.h"
+#include "vm.h"
+
+void page_fault_handler(struct trapframe *tf) {
+  // get the address using rcr2()
+  uint fault_va = rcr2(); // faulting virtual address
+
+  struct proc *curproc = myproc(); // current process
+
+  if (fault_va >= PGROUNDDOWN(curproc->sz)) {
+    // memory outside allocation, kill process
+    cprintf("invalid address: 0x%x\n", fault_va);
+    curproc->killed = 1;
+    return;
+  }
+
+  // obtain a free page
+  char *mem = kalloc(); // pointer to virtual address
+  if (mem == 0) {
+    // no more memory, kill process
+    cprintf("out of memory\n");
+    curproc->killed = 1;
+    return;
+  }
+
+  // zero out the page
+  memset(mem, 0, PGSIZE);
+  
+  // get physical address ptr from walkpgdir based on faulting virtual address
+  pte_t *pte = walkpgdir(curproc->pgdir, (void*) fault_va, 1);
+
+  if (pte == 0) {
+    // failed to get/allocate page directory entry
+    cprintf("walkpgdir failed\n");
+    kfree(mem); // free the page created
+    curproc->killed = 1; // kill the process
+    return;
+  }
+  
+  // update the page table entry
+  *pte = V2P(mem) | PTE_P | PTE_W | PTE_U;
+
+  // flush tlb
+  lcr3(V2P(curproc->pgdir));
+}
 
 // Interrupt descriptor table (shared by all CPUs).
 struct gatedesc idt[256];
@@ -47,6 +91,9 @@ trap(struct trapframe *tf)
   }
 
   switch(tf->trapno){
+  case T_PGFLT:
+    page_fault_handler(tf);
+    break;
   case T_IRQ0 + IRQ_TIMER:
     if(cpuid() == 0){
       acquire(&tickslock);

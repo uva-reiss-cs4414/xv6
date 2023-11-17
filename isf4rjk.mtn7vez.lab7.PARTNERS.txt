@@ -1,0 +1,5 @@
+partner 1: Bella Felaco, isf4rjk@virginia.edu
+
+partner 2: Michelle Nguyen, mtn7vez@virginia.edu
+
+Bella worked mostly on getpagetableentry and dumppagetable while Michelle worked mostly on isphysicalpagefree. We kept our code up to date with a shared repository and worked on debugging together. 

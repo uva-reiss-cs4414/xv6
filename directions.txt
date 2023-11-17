@@ -1,0 +1,32 @@
+xv6 currently allocates stack and heap memory immediately. More
+commonly, OSs will allocate this memory on demand, saving memory when not all of the
+stack or heap is used immediately. Modify xv6 to allocate heap memory based on page
+faults rather than immediately. It is okay if non-heap memory is still allocated statically.
+Your automatic allocation scheme:
+    [ ] Should initialize all newly allocated memory to zeroes, like happens with a stock
+        version of xv6.
+    [X] Should kill a process when it attempts to access memory outside of its allocation,
+        including memory beyond the end of heap (except that heap allocations should be
+        made in whole pages, so it’s okay to allow processes can access slightly beyond
+        the end of their heap if the end of their heap is in the middle of page) or kernel
+        memory, like happens with a stock version of xv6.
+    [X] Should kill a process when it attempts to access memory requiring an allocation
+        on demand and no more memory can be allocated. Make sure a message is printed
+        to the console when this happens.
+    [ ] Should never make the “guard page” xv6 allocates below the user stack accessible
+        in user mode.
+    [ ] Must make system calls that attempt to read or write to not-yet-allocated parts of
+        the heap work. For example, malloc()ing a very large buffer, then using read()
+        to fill it must work. We do not care, however, what happens if the process runs
+        out of memory during such a system call and must be killed. (For the most part,
+        this should just require treating page faults triggered by the kernel the same as
+        page faults triggered from user mode.)
+    [ ] Should not leak memory.
+
+Currently, when a program tries to allocate more heap space it calls the sbrk() system
+call, which calls growproc(). This sets the sz variable to track the size of the allocation
+and uses allocuvm() to create new page table entries. You can modify growproc() to
+still set the sz variable but avoid actually creating new page tables right away. With your
+modification, growproc() will no longer need to create new page table entries. Then
+you’d have make your page fault handler handle creating the new page table entries on
+demand that would have previously been created when new heap memory was allocated
